@@ -41,27 +41,27 @@ import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
 
 @Serializable
-object Home
+object HomeRoute
 
 @Serializable
-object Settings
+object SettingsRoute
 
 @Serializable
-data class ProblemList(
+data class ProblemListRoute(
     val quizId: String,
     val selectedId: String? = null,
 )
 
 @Serializable
-data class ProblemDetails(val problemId: String)
+data class ProblemDetailsRoute(val problemId: String)
 
 @Serializable
-data class QuizDetails(
+data class QuizDetailsRoute(
     val quizId: String,
 )
 
 @Serializable
-object QuizList
+object QuizListRoute
 
 @Composable
 fun AppRootScreen() {
@@ -76,24 +76,24 @@ fun AppRootScreen() {
     val onDismissHelp: () -> Unit = { showAboutDialog = false }
 
     val toBack: () -> Unit = { navController.popBackStack() }
-    val toHome: () -> Unit = { navController.popBackStack(route = Home, inclusive = false) }
-    val toQuizList: () -> Unit = { navController.navigate(route = QuizList) }
-    val toSettings: () -> Unit = { navController.navigate(route = Settings) }
+    val toHome: () -> Unit = { navController.popBackStack(route = HomeRoute, inclusive = false) }
+    val toQuizList: () -> Unit = { navController.navigate(route = QuizListRoute) }
+    val toSettings: () -> Unit = { navController.navigate(route = SettingsRoute) }
     val toQuiz: (String) -> Unit = { quizId ->
-        navController.navigate(route = QuizDetails(quizId = quizId))
+        navController.navigate(route = QuizDetailsRoute(quizId = quizId))
     }
     val toProblem: (String) -> Unit = { problemId ->
-        navController.navigate(route = ProblemDetails(problemId = problemId))
+        navController.navigate(route = ProblemDetailsRoute(problemId = problemId))
     }
-    val toProblemList: (String, String?) -> Unit = { quizId, selectedId ->
-        navController.navigate(route = ProblemList(quizId = quizId, selectedId = selectedId))
+    val toProblemListRoute: (String, String?) -> Unit = { quizId, selectedId ->
+        navController.navigate(route = ProblemListRoute(quizId = quizId, selectedId = selectedId))
     }
 
     NavHost(
         navController = navController,
-        startDestination = Home
+        startDestination = HomeRoute
     ) {
-        composable<Home> {
+        composable<HomeRoute> {
             val viewModel: HomeViewModel = koinViewModel()
             HomeScreen(
                 viewModel = viewModel,
@@ -102,7 +102,7 @@ fun AppRootScreen() {
                 onShowHelp = onShowHelp
             )
         }
-        composable<QuizList> {
+        composable<QuizListRoute> {
             val viewModel: QuizListViewModel = koinViewModel()
             QuizListScreen(
                 viewModel = viewModel,
@@ -112,14 +112,12 @@ fun AppRootScreen() {
                 onShowHelp = onShowHelp,
             )
         }
-        composable<ProblemList> { backStackEntry ->
+        composable<ProblemListRoute> { backStackEntry ->
             val viewModel: ProblemListViewModel = koinViewModel()
-            val problemList: ProblemList = backStackEntry.toRoute()
-            val quizId: String = problemList.quizId
-            val selectedId: String? = problemList.selectedId
+            val problemListRoute: ProblemListRoute = backStackEntry.toRoute()
+            val selectedId: String? = problemListRoute.selectedId
             ProblemListScreen(
                 viewModel = viewModel,
-                quizId = quizId,
                 selectedId = selectedId,
                 toProblem = toProblem,
                 toHome = toHome,
@@ -128,36 +126,30 @@ fun AppRootScreen() {
                 toQuiz = toQuiz
             )
         }
-        composable<ProblemDetails> { backStackEntry ->
+        composable<ProblemDetailsRoute> { backStackEntry ->
             val viewModel: ProblemDetailsViewModel = koinViewModel()
-            val problemDetails: ProblemDetails = backStackEntry.toRoute()
-            val problemId: String = problemDetails.problemId
             ProblemDetailsScreen(
                 viewModel = viewModel,
-                problemId = problemId,
                 onShowHelp = onShowHelp,
                 toHome = toHome,
-                toProblemList = toProblemList,
+                toProblemList = toProblemListRoute,
                 toProblem = toProblem,
                 toQuiz = toQuiz,
                 toBack = toBack
             )
         }
-        composable<QuizDetails> { backStackEntry ->
+        composable<QuizDetailsRoute> { backStackEntry ->
             val viewModel: QuizDetailsViewModel = koinViewModel()
-            val quizDetails: QuizDetails = backStackEntry.toRoute()
-            val quizId: String = quizDetails.quizId
             QuizDetailsScreen(
                 viewModel = viewModel,
-                quizId = quizId,
                 toHome = toHome,
                 toProblem = toProblem,
-                toProblemList = toProblemList,
+                toProblemList = toProblemListRoute,
                 toBack = toBack,
                 onShowHelp = onShowHelp
             )
         }
-        composable<Settings> {
+        composable<SettingsRoute> {
             val viewModel: SettingsViewModel = koinViewModel()
             SettingsScreen(
                 viewModel = viewModel,

@@ -91,9 +91,9 @@ val repositoryModule = module {
 
 val viewModelModule = module {
     viewModel<HomeViewModel> { HomeViewModel(repository = get()) }
-    viewModel<ProblemDetailsViewModel> { ProblemDetailsViewModel(repository = get()) }
-    viewModel<ProblemListViewModel> { ProblemListViewModel(repository = get()) }
-    viewModel<QuizDetailsViewModel> { QuizDetailsViewModel(repository = get()) }
+    viewModel<ProblemDetailsViewModel> { ProblemDetailsViewModel(repository = get(), savedStateHandle = get()) }
+    viewModel<ProblemListViewModel> { ProblemListViewModel(repository = get(), savedStateHandle = get()) }
+    viewModel<QuizDetailsViewModel> { QuizDetailsViewModel(repository = get(), savedStateHandle = get()) }
     viewModel<QuizListViewModel> { QuizListViewModel(repository = get()) }
     viewModel<SettingsViewModel> { SettingsViewModel(repository = get()) }
 }

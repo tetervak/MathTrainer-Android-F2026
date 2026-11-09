@@ -8,6 +8,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
+data class HomeUiState(
+    val quizCount: Int
+)
+
 class HomeViewModel(
     repository: QuizRepository,
 ) : ViewModel() {

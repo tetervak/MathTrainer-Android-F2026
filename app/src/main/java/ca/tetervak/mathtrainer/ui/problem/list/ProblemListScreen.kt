@@ -20,7 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ca.tetervak.mathtrainer.R
 import ca.tetervak.mathtrainer.domain.model.Problem
 import ca.tetervak.mathtrainer.domain.model.AnswerStatus
@@ -44,7 +44,6 @@ import ca.tetervak.mathtrainer.ui.theme.MathTrainerTheme
 @Composable
 fun ProblemListScreen(
     viewModel: ProblemListViewModel,
-    quizId: String,
     selectedId: String?,
     toProblem: (String) -> Unit,
     toQuiz: (String) -> Unit,
@@ -52,10 +51,7 @@ fun ProblemListScreen(
     onShowHelp: () -> Unit,
     toBack: () -> Unit
 ) {
-    LaunchedEffect(quizId) {
-        viewModel.loadProblems(quizId)
-    }
-    val uiState = viewModel.uiState.collectAsState()
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
     val state: ProblemListUiState = uiState.value
 
     if (state is ProblemListUiState.Success)

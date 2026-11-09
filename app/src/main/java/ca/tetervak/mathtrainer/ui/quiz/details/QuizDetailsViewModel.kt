@@ -1,56 +1,56 @@
 package ca.tetervak.mathtrainer.ui.quiz.details
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
+import ca.tetervak.mathtrainer.domain.model.Quiz
+import ca.tetervak.mathtrainer.domain.model.QuizStatus
 import ca.tetervak.mathtrainer.domain.repository.QuizRepository
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
+import ca.tetervak.mathtrainer.ui.QuizDetailsRoute
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 
+sealed interface QuizDetailsUiState {
+    object Loading : QuizDetailsUiState
+    data class Success(
+        val quiz: Quiz,
+        val quizStatus: QuizStatus,
+        val firstProblemId: String?
+    ) : QuizDetailsUiState
+}
+
 class QuizDetailsViewModel(
+    savedStateHandle: SavedStateHandle,
     private val repository: QuizRepository
 ) : ViewModel() {
 
-    private val quizIdFlow: MutableStateFlow<String?> = MutableStateFlow(null)
+    val quizDetailsRoute: QuizDetailsRoute = savedStateHandle.toRoute<QuizDetailsRoute>()
+    val quizId: String = quizDetailsRoute.quizId
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<QuizDetailsUiState> =
-        quizIdFlow.flatMapLatest { quizId ->
-            if (quizId == null) {
-                flowOf(QuizDetailsUiState.Loading)
-            } else {
-                combine(
-                    repository.getQuizByIdFlow(quizId).filterNotNull(),
-                    repository.getQuizStatusFlow(quizId).filterNotNull()
-                )
-                { quiz, quizStatus ->
-                    val firstProblemId = repository.getFirstProblemId(quizId)
-                    QuizDetailsUiState.Success(
-                        quiz = quiz,
-                        quizStatus = quizStatus,
-                        firstProblemId = firstProblemId
-                    )
-                }
-            }
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = QuizDetailsUiState.Loading
+        combine(
+            repository.getQuizByIdFlow(quizId).filterNotNull(),
+            repository.getQuizStatusFlow(quizId).filterNotNull()
         )
-
-    fun loadQuiz(quizId: String) {
-        quizIdFlow.value = quizId
-    }
+        { quiz, quizStatus ->
+            val firstProblemId = repository.getFirstProblemId(quizId)
+            QuizDetailsUiState.Success(
+                quiz = quiz,
+                quizStatus = quizStatus,
+                firstProblemId = firstProblemId
+            )
+        }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = QuizDetailsUiState.Loading
+            )
 
     fun deleteQuiz() {
-        quizIdFlow.value?.let { quizId ->
-            repository.deleteQuizWithProblems(quizId = quizId)
-        }
+        repository.deleteQuizWithProblems(quizId = quizId)
     }
 }

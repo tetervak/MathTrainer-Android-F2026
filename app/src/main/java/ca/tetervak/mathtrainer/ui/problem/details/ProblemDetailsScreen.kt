@@ -39,9 +39,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,6 +53,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ca.tetervak.mathtrainer.R
 import ca.tetervak.mathtrainer.domain.model.Problem
 import ca.tetervak.mathtrainer.domain.model.AnswerStatus
@@ -66,7 +65,6 @@ import ca.tetervak.mathtrainer.ui.theme.MathTrainerTheme
 @Composable
 fun ProblemDetailsScreen(
     viewModel: ProblemDetailsViewModel,
-    problemId: String,
     onShowHelp: () -> Unit,
     toHome: () -> Unit,
     toProblemList: (String, String?) -> Unit,
@@ -74,10 +72,7 @@ fun ProblemDetailsScreen(
     toQuiz: (String) -> Unit,
     toBack: () -> Unit
 ) {
-    LaunchedEffect(problemId) {
-        viewModel.loadProblem(problemId)
-    }
-    val detailsUiState: State<ProblemDetailsUiState> = viewModel.uiState.collectAsState()
+    val detailsUiState: State<ProblemDetailsUiState> = viewModel.uiState.collectAsStateWithLifecycle()
     val state = detailsUiState.value
     if (state is ProblemDetailsUiState.Success) {
         ProblemDetailsScreenBody(

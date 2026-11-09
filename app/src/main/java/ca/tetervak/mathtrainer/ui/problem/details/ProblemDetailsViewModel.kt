@@ -3,53 +3,60 @@ package ca.tetervak.mathtrainer.ui.problem.details
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import ca.tetervak.mathtrainer.domain.model.Problem
 import ca.tetervak.mathtrainer.domain.model.AnswerStatus
 import ca.tetervak.mathtrainer.domain.repository.QuizRepository
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
+import ca.tetervak.mathtrainer.ui.ProblemDetailsRoute
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+sealed interface ProblemDetailsUiState {
+    object Loading : ProblemDetailsUiState
+    data class Success(
+        val problem: Problem,
+        val quizNumber: Int,
+        val numberOfProblems: Int,
+        val numberOfRightAnswers: Int,
+        val firstProblemId: String?,
+        val nextProblemId: String?,
+        val previousProblemId: String?
+    ) : ProblemDetailsUiState
+}
+
 class ProblemDetailsViewModel(
+    savedStateHandle: SavedStateHandle,
     private val repository: QuizRepository,
 ) : ViewModel() {
 
-    private val problemIdFlow: MutableStateFlow<String?> = MutableStateFlow(null)
+    val problemDetailsRoute: ProblemDetailsRoute = savedStateHandle.toRoute<ProblemDetailsRoute>()
+    val problemId: String = problemDetailsRoute.problemId
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<ProblemDetailsUiState> =
-        problemIdFlow.flatMapLatest { problemId ->
-            if (problemId == null) {
-                flowOf(ProblemDetailsUiState.Loading)
-            } else {
-                repository.getProblemByIdFlow(problemId)
-                    .filterNotNull()
-                    .onEach { problem ->
-                        answerInput = if (problem.answerStatus == AnswerStatus.RIGHT_ANSWER) {
-                            checkNotNull(problem.userAnswer)
-                        } else { "" }
-                    }
-                    .map { problem -> successState(problem) }
-            }
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = ProblemDetailsUiState.Loading
-        )
 
-    fun loadProblem(problemId: String) {
-        problemIdFlow.value = problemId
-    }
+        repository.getProblemByIdFlow(problemId)
+            .filterNotNull()
+            .onEach { problem ->
+                answerInput = if (problem.answerStatus == AnswerStatus.RIGHT_ANSWER) {
+                    checkNotNull(problem.userAnswer)
+                } else {
+                    ""
+                }
+            }
+            .map { problem -> successState(problem) }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = ProblemDetailsUiState.Loading
+            )
 
     var answerInput: String by mutableStateOf("")
         private set
@@ -77,7 +84,7 @@ class ProblemDetailsViewModel(
         }
     }
 
-    private suspend fun successState(problem: Problem): ProblemDetailsUiState.Success{
+    private suspend fun successState(problem: Problem): ProblemDetailsUiState.Success {
         val numberOfProblems = repository.getQuizProblemCount(problem.quizId)
         val quizNumber = repository.getQuizNumber(problem.quizId)
         val numberOfRightAnswers =

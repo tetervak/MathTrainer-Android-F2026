@@ -16,7 +16,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ca.tetervak.mathtrainer.R
 import ca.tetervak.mathtrainer.ui.common.QuizTopBar
 import ca.tetervak.mathtrainer.ui.theme.MathTrainerTheme
@@ -38,7 +38,7 @@ fun HomeScreen(
     viewModel: HomeViewModel,
 ) {
 
-    val state: HomeUiState by viewModel.uiState.collectAsState()
+    val state: HomeUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     HomeScreenBody(
         numberOfQuizzes = state.quizCount,
