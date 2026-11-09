@@ -1,9 +1,9 @@
 package ca.tetervak.mathtrainer.di
 
 import androidx.datastore.core.DataStore
-import androidx.datastore.dataStore
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
+import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
 import ca.tetervak.mathtrainer.data.database.MathTrainerDatabase
 import ca.tetervak.mathtrainer.data.database.dao.ProblemDao
@@ -49,9 +49,11 @@ val databaseModule = module {
 }
 
 private const val USER_PREFERENCES = "user_preferences"
-val dataStoreModule =  module {
+val dataStoreModule = module {
     single<DataStore<Preferences>> {
-        preferencesDataStore(name = USER_PREFERENCES).getValue(androidContext(), String::javaClass)
+        PreferenceDataStoreFactory.create(
+            produceFile = { androidContext().preferencesDataStoreFile(USER_PREFERENCES) }
+        )
     }
 }
 
