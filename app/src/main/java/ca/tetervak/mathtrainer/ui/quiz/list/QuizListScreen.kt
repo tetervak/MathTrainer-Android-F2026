@@ -32,7 +32,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import ca.tetervak.mathtrainer.R
 import ca.tetervak.mathtrainer.domain.model.Quiz
 import ca.tetervak.mathtrainer.domain.model.QuizScore
@@ -42,13 +41,13 @@ import ca.tetervak.mathtrainer.ui.theme.MathTrainerTheme
 
 @Composable
 fun QuizListScreen(
+    viewModel: QuizListViewModel,
     toHome: () -> Unit,
     toQuiz: (String) -> Unit,
     toBack: () -> Unit,
-    onShowHelp: () -> Unit,
+    onShowHelp: () -> Unit
 ) {
 
-    val viewModel: QuizListViewModel = hiltViewModel()
     val uiState = viewModel.uiState.collectAsState()
     val stateList = uiState.value.stateList
 

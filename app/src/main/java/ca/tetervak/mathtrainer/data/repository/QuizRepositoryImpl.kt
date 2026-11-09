@@ -15,7 +15,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
 class QuizRepositoryImpl(
     private val quizStorageRepository: QuizStorageRepository,
@@ -25,7 +24,6 @@ class QuizRepositoryImpl(
 ) : QuizRepository {
 
     @OptIn(DelicateCoroutinesApi::class)
-    @Inject
     constructor(
         quizStorageRepository: QuizStorageRepository,
         randomQuizRepository: QuizGenerationRepository

@@ -30,7 +30,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import ca.tetervak.mathtrainer.R
 import ca.tetervak.mathtrainer.domain.model.Quiz
 import ca.tetervak.mathtrainer.domain.model.QuizStatus
@@ -41,14 +40,14 @@ import ca.tetervak.mathtrainer.ui.theme.Purple40
 
 @Composable
 fun QuizDetailsScreen(
+    viewModel: QuizDetailsViewModel,
     quizId: String,
     toHome: () -> Unit,
     toProblem: (String) -> Unit,
     toProblemList: (String, String?) -> Unit,
     toBack: () -> Unit,
-    onShowHelp: () -> Unit,
+    onShowHelp: () -> Unit
 ) {
-    val viewModel: QuizDetailsViewModel = hiltViewModel()
     LaunchedEffect(quizId) {
         viewModel.loadQuiz(quizId)
     }

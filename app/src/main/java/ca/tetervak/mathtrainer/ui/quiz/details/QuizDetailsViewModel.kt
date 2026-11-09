@@ -3,7 +3,6 @@ package ca.tetervak.mathtrainer.ui.quiz.details
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ca.tetervak.mathtrainer.domain.repository.QuizRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -13,11 +12,9 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
-import javax.inject.Inject
 
-@HiltViewModel
-class QuizDetailsViewModel @Inject constructor(
-    private val quizRepository: QuizRepository
+class QuizDetailsViewModel(
+    private val repository: QuizRepository
 ) : ViewModel() {
 
     private val quizIdFlow: MutableStateFlow<String?> = MutableStateFlow(null)
@@ -29,11 +26,11 @@ class QuizDetailsViewModel @Inject constructor(
                 flowOf(QuizDetailsUiState.Loading)
             } else {
                 combine(
-                    quizRepository.getQuizByIdFlow(quizId).filterNotNull(),
-                    quizRepository.getQuizStatusFlow(quizId).filterNotNull()
+                    repository.getQuizByIdFlow(quizId).filterNotNull(),
+                    repository.getQuizStatusFlow(quizId).filterNotNull()
                 )
                 { quiz, quizStatus ->
-                    val firstProblemId = quizRepository.getFirstProblemId(quizId)
+                    val firstProblemId = repository.getFirstProblemId(quizId)
                     QuizDetailsUiState.Success(
                         quiz = quiz,
                         quizStatus = quizStatus,
@@ -53,7 +50,7 @@ class QuizDetailsViewModel @Inject constructor(
 
     fun deleteQuiz() {
         quizIdFlow.value?.let { quizId ->
-            quizRepository.deleteQuizWithProblems(quizId = quizId)
+            repository.deleteQuizWithProblems(quizId = quizId)
         }
     }
 }

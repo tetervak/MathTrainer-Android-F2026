@@ -2,12 +2,9 @@ package ca.tetervak.mathtrainer.data.repository
 
 import ca.tetervak.mathtrainer.data.database.dao.UserDao
 import ca.tetervak.mathtrainer.data.database.entity.UserEntity
-import javax.inject.Inject
-import javax.inject.Singleton
 
 
-@Singleton
-class UserRepositoryRoom @Inject constructor(
+class UserRepositoryRoom(
     private val userDao: UserDao
 ) {
 

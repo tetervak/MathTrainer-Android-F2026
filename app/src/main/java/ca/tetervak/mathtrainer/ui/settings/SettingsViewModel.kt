@@ -5,38 +5,34 @@ import androidx.lifecycle.viewModelScope
 import ca.tetervak.mathtrainer.domain.model.ProblemGeneration
 import ca.tetervak.mathtrainer.domain.model.UserPreferences
 import ca.tetervak.mathtrainer.domain.repository.PreferencesRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import javax.inject.Inject
-
-@HiltViewModel
-class SettingsViewModel @Inject constructor(
-    private val preferencesRepository: PreferencesRepository
+class SettingsViewModel(
+    private val repository: PreferencesRepository
 ): ViewModel() {
 
-    val uiState: StateFlow<UserPreferences> = preferencesRepository.getUserPreferencesFlow()
+    val uiState: StateFlow<UserPreferences> = repository.getUserPreferencesFlow()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = runBlocking {
-                preferencesRepository.getUserPreferences()
+                repository.getUserPreferences()
             }
         )
 
 
     fun saveNumberOfProblems(numberOfProblems: Int) {
         viewModelScope.launch {
-            preferencesRepository.saveNumberOfProblems(numberOfProblems)
+            repository.saveNumberOfProblems(numberOfProblems)
         }
     }
 
     fun saveProblemGeneration(problemGeneration: ProblemGeneration) {
         viewModelScope.launch {
-            preferencesRepository.saveProblemGeneration(problemGeneration)
+            repository.saveProblemGeneration(problemGeneration)
         }
     }
 }

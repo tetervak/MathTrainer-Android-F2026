@@ -4,23 +4,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ca.tetervak.mathtrainer.domain.model.QuizScore
 import ca.tetervak.mathtrainer.domain.repository.QuizRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import javax.inject.Inject
 
-@HiltViewModel
-class QuizListViewModel @Inject constructor(
-    private val quizRepository: QuizRepository
+class QuizListViewModel(
+    private val repository: QuizRepository
 ) : ViewModel() {
 
     val uiState: StateFlow<QuizListUiState> =
-        quizRepository.getUserQuizzesFlow()
+        repository.getUserQuizzesFlow()
             .map { quizzes ->
                 val stateList = quizzes.map { quiz ->
-                    val score: QuizScore = quizRepository.getQuizScore(quizId = quiz.id)
+                    val score: QuizScore = repository.getQuizScore(quizId = quiz.id)
                     QuizListItemUiState(
                         quiz = quiz,
                         quizScore = score
@@ -35,7 +32,7 @@ class QuizListViewModel @Inject constructor(
             )
 
     fun addNewQuiz() {
-        quizRepository.addNewGeneratedQuiz()
+        repository.addNewGeneratedQuiz()
     }
 
 }

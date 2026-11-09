@@ -6,11 +6,8 @@ import ca.tetervak.mathtrainer.data.remote.RandomQuizApi
 import ca.tetervak.mathtrainer.domain.model.AlgebraProblem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class QuizGenerationRepositoryRemote @Inject constructor(
+class QuizGenerationRepositoryRemote(
     private val randomQuizApi: RandomQuizApi
 ) {
 

@@ -25,22 +25,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import ca.tetervak.mathtrainer.R
 import ca.tetervak.mathtrainer.ui.common.QuizTopBar
 import ca.tetervak.mathtrainer.ui.theme.MathTrainerTheme
 import ca.tetervak.mathtrainer.ui.theme.Purple40
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     toQuizList: () -> Unit,
     toSettings: () -> Unit,
     onShowHelp: () -> Unit,
+    viewModel: HomeViewModel,
 ) {
 
-    val homeViewModel: HomeViewModel = hiltViewModel()
-    val state: HomeUiState by homeViewModel.uiState.collectAsState()
+    val state: HomeUiState by viewModel.uiState.collectAsState()
 
     HomeScreenBody(
         numberOfQuizzes = state.quizCount,

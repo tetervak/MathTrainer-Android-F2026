@@ -55,7 +55,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import ca.tetervak.mathtrainer.R
 import ca.tetervak.mathtrainer.domain.model.Problem
 import ca.tetervak.mathtrainer.domain.model.AnswerStatus
@@ -64,9 +63,9 @@ import ca.tetervak.mathtrainer.ui.common.QuizTopBar
 import ca.tetervak.mathtrainer.ui.common.ScoreCard
 import ca.tetervak.mathtrainer.ui.theme.MathTrainerTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProblemDetailsScreen(
+    viewModel: ProblemDetailsViewModel,
     problemId: String,
     onShowHelp: () -> Unit,
     toHome: () -> Unit,
@@ -75,8 +74,6 @@ fun ProblemDetailsScreen(
     toQuiz: (String) -> Unit,
     toBack: () -> Unit
 ) {
-
-    val viewModel: ProblemDetailsViewModel = hiltViewModel()
     LaunchedEffect(problemId) {
         viewModel.loadProblem(problemId)
     }

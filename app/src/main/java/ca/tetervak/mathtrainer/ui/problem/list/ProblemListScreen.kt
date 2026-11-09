@@ -32,7 +32,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import ca.tetervak.mathtrainer.R
 import ca.tetervak.mathtrainer.domain.model.Problem
 import ca.tetervak.mathtrainer.domain.model.AnswerStatus
@@ -42,9 +41,9 @@ import ca.tetervak.mathtrainer.ui.common.QuizTopBar
 import ca.tetervak.mathtrainer.ui.common.ScoreCard
 import ca.tetervak.mathtrainer.ui.theme.MathTrainerTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProblemListScreen(
+    viewModel: ProblemListViewModel,
     quizId: String,
     selectedId: String?,
     toProblem: (String) -> Unit,
@@ -53,8 +52,6 @@ fun ProblemListScreen(
     onShowHelp: () -> Unit,
     toBack: () -> Unit
 ) {
-    val viewModel: ProblemListViewModel = hiltViewModel()
-
     LaunchedEffect(quizId) {
         viewModel.loadProblems(quizId)
     }

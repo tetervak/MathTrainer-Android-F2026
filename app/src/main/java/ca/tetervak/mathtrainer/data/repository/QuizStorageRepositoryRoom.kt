@@ -2,6 +2,7 @@ package ca.tetervak.mathtrainer.data.repository
 
 import ca.tetervak.mathtrainer.data.database.dao.ProblemDao
 import ca.tetervak.mathtrainer.data.database.dao.QuizDao
+import ca.tetervak.mathtrainer.data.database.dao.UserDao
 import ca.tetervak.mathtrainer.data.database.entity.UserEntity
 import ca.tetervak.mathtrainer.domain.model.AlgebraProblem
 import ca.tetervak.mathtrainer.domain.model.AnswerStatus
@@ -10,7 +11,6 @@ import ca.tetervak.mathtrainer.domain.model.Quiz
 import ca.tetervak.mathtrainer.domain.model.QuizScore
 import ca.tetervak.mathtrainer.domain.model.QuizStatus
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -18,27 +18,31 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.util.UUID
-import javax.inject.Inject
-import javax.inject.Singleton
-
-@Singleton
 class QuizStorageRepositoryRoom(
+    private val userDao: UserDao,
     private val quizDao: QuizDao,
     private val problemDao: ProblemDao,
     private val dispatcher: CoroutineDispatcher
 ) : QuizStorageRepository {
 
-    @OptIn(DelicateCoroutinesApi::class)
-    @Inject constructor(
+    constructor(
+        userDao: UserDao,
         quizDao: QuizDao,
         problemDao: ProblemDao
     ) : this(
+        userDao = userDao,
         quizDao = quizDao,
         problemDao = problemDao,
         dispatcher = Dispatchers.IO
     )
 
     private val userId: String = UserEntity.demoUser.id
+
+    private suspend fun ensureUserExist(){
+        if(userDao.getUserById(userId) == null){
+            userDao.insert(UserEntity.demoUser)
+        }
+    }
 
     override fun getUserQuizzesFlow(): Flow<List<Quiz>> =
         quizDao.getUserQuizzesFlow(userId).map { entities ->
@@ -57,6 +61,7 @@ class QuizStorageRepositoryRoom(
     override suspend fun insertQuizWithProblems(
         problems: List<AlgebraProblem>
     ) = withContext(context = dispatcher) {
+        ensureUserExist()
         val quizId = UUID.randomUUID().toString()
         val problemEntities = problems.mapIndexed { index, problem ->
             problem.toEntity(

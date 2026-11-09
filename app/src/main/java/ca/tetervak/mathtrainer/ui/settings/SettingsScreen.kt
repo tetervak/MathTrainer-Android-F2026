@@ -35,7 +35,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import ca.tetervak.mathtrainer.R
 import ca.tetervak.mathtrainer.domain.model.ProblemGeneration
 import ca.tetervak.mathtrainer.domain.model.UserPreferences
@@ -46,11 +45,11 @@ import ca.tetervak.mathtrainer.ui.theme.Purple40
 
 @Composable
 fun SettingsScreen(
+    viewModel: SettingsViewModel,
     toHome: () -> Unit,
     onShowHelp: () -> Unit,
     toBack: () -> Unit
 ){
-    val viewModel: SettingsViewModel = hiltViewModel()
     val uiState: UserPreferences by viewModel.uiState.collectAsState()
 
     SettingsScreenBody(
@@ -62,8 +61,6 @@ fun SettingsScreen(
         onShowHelp = onShowHelp,
         toBack = toBack
     )
-
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

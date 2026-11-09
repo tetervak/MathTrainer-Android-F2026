@@ -18,8 +18,7 @@ import ca.tetervak.mathtrainer.data.database.entity.UserEntity
 )
 @TypeConverters(DateConverter::class)
 abstract class MathTrainerDatabase : RoomDatabase() {
-
-    abstract fun userDao(): UserDao
-    abstract fun quizDao(): QuizDao
-    abstract fun problemDao(): ProblemDao
+    abstract val userDao: UserDao
+    abstract val quizDao: QuizDao
+    abstract val problemDao: ProblemDao
 }

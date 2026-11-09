@@ -27,11 +27,18 @@ import androidx.navigation.toRoute
 import ca.tetervak.mathtrainer.ui.common.AboutDialog
 import ca.tetervak.mathtrainer.ui.problem.details.ProblemDetailsScreen
 import ca.tetervak.mathtrainer.ui.home.HomeScreen
+import ca.tetervak.mathtrainer.ui.home.HomeViewModel
+import ca.tetervak.mathtrainer.ui.problem.details.ProblemDetailsViewModel
 import ca.tetervak.mathtrainer.ui.problem.list.ProblemListScreen
+import ca.tetervak.mathtrainer.ui.problem.list.ProblemListViewModel
 import ca.tetervak.mathtrainer.ui.quiz.details.QuizDetailsScreen
+import ca.tetervak.mathtrainer.ui.quiz.details.QuizDetailsViewModel
 import ca.tetervak.mathtrainer.ui.quiz.list.QuizListScreen
+import ca.tetervak.mathtrainer.ui.quiz.list.QuizListViewModel
 import ca.tetervak.mathtrainer.ui.settings.SettingsScreen
+import ca.tetervak.mathtrainer.ui.settings.SettingsViewModel
 import kotlinx.serialization.Serializable
+import org.koin.compose.viewmodel.koinViewModel
 
 @Serializable
 object Home
@@ -87,14 +94,18 @@ fun AppRootScreen() {
         startDestination = Home
     ) {
         composable<Home> {
+            val viewModel: HomeViewModel = koinViewModel()
             HomeScreen(
+                viewModel = viewModel,
                 toQuizList = toQuizList,
                 toSettings = toSettings,
                 onShowHelp = onShowHelp
             )
         }
         composable<QuizList> {
+            val viewModel: QuizListViewModel = koinViewModel()
             QuizListScreen(
+                viewModel = viewModel,
                 toHome = toHome,
                 toQuiz = toQuiz,
                 toBack = toBack,
@@ -102,10 +113,12 @@ fun AppRootScreen() {
             )
         }
         composable<ProblemList> { backStackEntry ->
+            val viewModel: ProblemListViewModel = koinViewModel()
             val problemList: ProblemList = backStackEntry.toRoute()
             val quizId: String = problemList.quizId
             val selectedId: String? = problemList.selectedId
             ProblemListScreen(
+                viewModel = viewModel,
                 quizId = quizId,
                 selectedId = selectedId,
                 toProblem = toProblem,
@@ -116,9 +129,11 @@ fun AppRootScreen() {
             )
         }
         composable<ProblemDetails> { backStackEntry ->
+            val viewModel: ProblemDetailsViewModel = koinViewModel()
             val problemDetails: ProblemDetails = backStackEntry.toRoute()
             val problemId: String = problemDetails.problemId
             ProblemDetailsScreen(
+                viewModel = viewModel,
                 problemId = problemId,
                 onShowHelp = onShowHelp,
                 toHome = toHome,
@@ -129,9 +144,11 @@ fun AppRootScreen() {
             )
         }
         composable<QuizDetails> { backStackEntry ->
+            val viewModel: QuizDetailsViewModel = koinViewModel()
             val quizDetails: QuizDetails = backStackEntry.toRoute()
             val quizId: String = quizDetails.quizId
             QuizDetailsScreen(
+                viewModel = viewModel,
                 quizId = quizId,
                 toHome = toHome,
                 toProblem = toProblem,
@@ -141,7 +158,9 @@ fun AppRootScreen() {
             )
         }
         composable<Settings> {
+            val viewModel: SettingsViewModel = koinViewModel()
             SettingsScreen(
+                viewModel = viewModel,
                 onShowHelp = onShowHelp,
                 toHome = toHome,
                 toBack = toBack

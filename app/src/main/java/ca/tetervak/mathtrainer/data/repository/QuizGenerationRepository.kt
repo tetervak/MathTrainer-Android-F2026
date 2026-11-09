@@ -6,11 +6,8 @@ import ca.tetervak.mathtrainer.domain.model.ProblemGeneration
 import ca.tetervak.mathtrainer.domain.repository.PreferencesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class QuizGenerationRepository @Inject constructor(
+class QuizGenerationRepository(
     private val quizGenerationRepositoryLocal: QuizGenerationRepositoryLocal,
     private val quizGenerationRepositoryRemote: QuizGenerationRepositoryRemote,
     private val preferencesRepository: PreferencesRepository
